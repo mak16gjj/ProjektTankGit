@@ -2,7 +2,7 @@
  Name:    Arduino_Home.ino
  Created: 21.06.2019 21:52:05
  Author:  kaufm
- Board:   Arduino Nano ATmega328
+ Board:   Arduino Nano ATmega328 (Old Bootloader)
 */
 #include <Streaming.h>
 //#include <SoftEasyTransfer.h>

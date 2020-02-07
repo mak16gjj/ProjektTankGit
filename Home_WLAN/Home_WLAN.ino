@@ -4,6 +4,7 @@
   Author:  kaufm
   Board:   NodeMCU 1.0 (ESP-12E Module)
 */
+#include <Arduino.h>
 #include <CTBotInlineKeyboard.h>
 #include <CTBotDataStructures.h>
 #include <CTBot.h>
@@ -12,6 +13,11 @@
 #include <Streaming.h>
 #include "network_secrets.h"
 
+struct MSG_STRUCT
+{
+	int id;
+	unsigned int data;
+};
 
 
 /**WLAN**/
@@ -54,11 +60,6 @@ unsigned long prevmillis1 = 0;
 unsigned long intervall2 = 1000;  //für Telegramabfrage
 unsigned long prevmillis2 = 0;
 
-struct MSG_STRUCT
-{
-  int id;
-  unsigned int data;
-};
 
 MSG_STRUCT A_RMSG;
 MSG_STRUCT A_TMSG;
@@ -188,11 +189,13 @@ void waitForTelegram()
 		msgsenderid = msg.sender.id;
 		if (msgtext == "?")
 		{
-			
+
 		}
-		
+
 
 	}
+	else
+		Serial << "waiting " << millis() << endl;
 }
 
 void TelegramSendMSG()
