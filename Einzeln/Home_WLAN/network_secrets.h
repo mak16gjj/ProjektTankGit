@@ -1,0 +1,3 @@
+#define SECRET_SSID "KAROM"
+#define SECRET_PASS "GzSz&DsDs4Me"
+#define SECRET_BOT_TOKEN "765979667:AAFIRPvgdiAiwu-t7xZl99YsWjkVPIeqYdk"

@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2019
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DasProjekt", "DasProjekt.vcxproj", "{C5F80730-F44F-4478-BDAE-6634EFC2CA88}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{35E6C245-B095-430B-BAD9-38FC5C626E5A}"
+	ProjectSection(SolutionItems) = preProject
+		..\Werkstatt_Tor\Werkstatt_Tor.ino = ..\Werkstatt_Tor\Werkstatt_Tor.ino
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Home_Arduino", "..\Home_Arduino\Home_Arduino.vcxproj", "{1082845A-FADE-488F-A639-8CF884B96CF8}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Home_WLAN", "..\Home_WLAN\Home_WLAN.vcxproj", "{6279D7E2-ABE0-4E8A-85EB-2B2A0F24D48A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Werkstatt_Arduino", "..\Werkstatt_Arduino\Werkstatt_Arduino.vcxproj", "{343CB419-3D0E-4C8A-8B3A-ED6808DFB5D2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Werkstatt_Tor", "..\Werkstatt_Tor\Werkstatt_Tor.vcxproj", "{41E7CFDB-D64C-4C14-9F79-1BE257B82DAC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.ActiveCfg = Debug|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Debug|x86.Build.0 = Debug|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.ActiveCfg = Release|Win32
+		{C5F80730-F44F-4478-BDAE-6634EFC2CA88}.Release|x86.Build.0 = Release|Win32
+		{1082845A-FADE-488F-A639-8CF884B96CF8}.Debug|x86.ActiveCfg = Debug|Win32
+		{1082845A-FADE-488F-A639-8CF884B96CF8}.Debug|x86.Build.0 = Debug|Win32
+		{1082845A-FADE-488F-A639-8CF884B96CF8}.Release|x86.ActiveCfg = Release|Win32
+		{1082845A-FADE-488F-A639-8CF884B96CF8}.Release|x86.Build.0 = Release|Win32
+		{6279D7E2-ABE0-4E8A-85EB-2B2A0F24D48A}.Debug|x86.ActiveCfg = Debug|Win32
+		{6279D7E2-ABE0-4E8A-85EB-2B2A0F24D48A}.Debug|x86.Build.0 = Debug|Win32
+		{6279D7E2-ABE0-4E8A-85EB-2B2A0F24D48A}.Release|x86.ActiveCfg = Release|Win32
+		{6279D7E2-ABE0-4E8A-85EB-2B2A0F24D48A}.Release|x86.Build.0 = Release|Win32
+		{343CB419-3D0E-4C8A-8B3A-ED6808DFB5D2}.Debug|x86.ActiveCfg = Debug|Win32
+		{343CB419-3D0E-4C8A-8B3A-ED6808DFB5D2}.Debug|x86.Build.0 = Debug|Win32
+		{343CB419-3D0E-4C8A-8B3A-ED6808DFB5D2}.Release|x86.ActiveCfg = Release|Win32
+		{343CB419-3D0E-4C8A-8B3A-ED6808DFB5D2}.Release|x86.Build.0 = Release|Win32
+		{41E7CFDB-D64C-4C14-9F79-1BE257B82DAC}.Debug|x86.ActiveCfg = Debug|Win32
+		{41E7CFDB-D64C-4C14-9F79-1BE257B82DAC}.Debug|x86.Build.0 = Debug|Win32
+		{41E7CFDB-D64C-4C14-9F79-1BE257B82DAC}.Release|x86.ActiveCfg = Release|Win32
+		{41E7CFDB-D64C-4C14-9F79-1BE257B82DAC}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B385A8BF-77F0-4D7E-AE53-246FF28D4799}
+	EndGlobalSection
+EndGlobal
