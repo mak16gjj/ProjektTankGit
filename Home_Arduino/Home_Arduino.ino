@@ -22,21 +22,19 @@ RH_E32 RHTrans(&ESerial, PIN_M0, PIN_M1, PIN_AX);
 /**ESP6288**/ //(WLAN-uC)
 #define SSRX 8
 #define SSTX 9
-SoftwareSerial WSerial(8, 9);  //für WLAN (ESP8266)
+SoftwareSerial WSerial(8, 9);  //fï¿½r WLAN (ESP8266)
+int Wreceived_id = -1;
+String Wreceived_data = "-1";
 //SoftEasyTransfer WET;
 /**End ESP6288**/
 
-unsigned long intervall = 1000;
-unsigned long prevmillis = 0;
+unsigned long intervall1 = 100;
+unsigned long prevmillis1 = 0;
+unsigned long intervall2 = 1000;
+unsigned long prevmillis2 = 0;
 int counter = 0;
 
-struct MSG_STRUCT
-{
-	int id;
-	unsigned int data;
-};
 
-MSG_STRUCT W_RMSG;
 
 
 
@@ -59,18 +57,9 @@ void analyseFunk()
 void WetterAuswerten()
 {}
 
-void NachrichtAnWLAN(int id, int data)
-{
-	WSerial.print("i");
-	WSerial.print(id);
-	WSerial.print("d");
-	WSerial.print(data);
-	WSerial.print("e");
 
-	Serial << "gesendet: " << id << ": " << data << endl;
-}
 
-void waitForWLAN()
+void waitForWLAN()  //warte auf Serielle Kommunikation vom WLAN-Controler
 {
 	if (WSerial.available() > 0)
 	{
@@ -78,23 +67,32 @@ void waitForWLAN()
 		inbyte = WSerial.read();
 		if (inbyte == 'i')
 		{
-			W_RMSG.id = WSerial.parseInt();
+			
+			Wreceived_id = WSerial.parseInt();
+			Serial.println(Wreceived_id);
 		}
 		else if (inbyte == 'd')
 		{
-			W_RMSG.data = WSerial.parseInt();
+			Wreceived_data = WSerial.readStringUntil('|');
+			Serial.println(Wreceived_data);
 		}
 		else if (inbyte == 'e')
 		{
-			Serial << "Zahl: " << W_RMSG.id << ": " << W_RMSG.data << endl;
+			delay(15);
 			analyseWLAN();
-
+			
 		}
 	}
 }
 
 void analyseWLAN()
-{}
+{
+	if (Wreceived_id == 1)
+	{
+		serialSendMSG(1, String(millis()));
+		//Wreceived_id = -1;
+	}
+}
 
 void TelegrammNachrichtvorbereiten()
 {}
@@ -106,40 +104,35 @@ void alleMessdatenAnfordern()
 
 // the loop function runs over and over again until power down or reset
 void loop() {
-	if (millis() - prevmillis >= intervall)
+	if (millis() - prevmillis1 >= intervall1)
 	{
-		W_TMSG.id = ++counter;
-		W_TMSG.data = millis();
-		//WET.sendData();
-
-
-		/*
-		WSerial.print("i");
-		WSerial.print(W_RMSG.id);
-		WSerial.print("d");
-		WSerial.print(W_RMSG.data);
-		WSerial.print("e");
-		*/
-		//serialSendMSG(&W_TMSG);
-		NachrichtanWLAN(++counter, millis());
-
-
-		//WSerial.println("hallo");
-
-		prevmillis = millis();
+		waitForWLAN();  //Warte auf Nachrichten vomn WLAN-Controller
+		prevmillis1 = millis();
 	}
 
-	waitForWLAN();
+	if (millis() - prevmillis2 >= intervall2)
+	{
+		Serial << "waiting " << millis() << endl;
+		prevmillis2 = millis();
+	}
+
+	
 
 }
 
-void serialSendMSG(MSG_STRUCT *MSG)
+void NachrichtAnWLAN(int id, String data)
+{
+	serialSendMSG(id, data);
+}
+void serialSendMSG(int id, String data)
 {
 	WSerial.print("i");
-	WSerial.print(MSG->id);
+	WSerial.print(id);
 	WSerial.print("d");
-	WSerial.print(MSG->data);
-	WSerial.print("e");
+	WSerial.print(data);
+	WSerial.print("|e");
 
-	Serial << "gesendet: " << MSG->id << ": " << MSG->data << endl;
+	delay(10);
+
+	Serial << "gesendet: " << id << ": " << data << endl;
 }

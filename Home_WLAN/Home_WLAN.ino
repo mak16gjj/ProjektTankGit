@@ -13,6 +13,10 @@
 #include <Streaming.h>
 #include "network_secrets.h"
 
+/**Serielle Befehle**/
+#define ArduinoAlive 1 //gibt Alive in ms zurück
+/**Serielle Befehle**/
+
 
 /**WLAN**/
 const char* ssid = SECRET_SSID;
@@ -41,6 +45,10 @@ unsigned long telegram_prevmillis = 0;
 SoftwareSerial ASerial(SSRX, SSTX);  //kommt von/geht an Arduino Nano
 int Areceived_id = -1;
 String Areceived_data = "-1";
+int lastSendId;
+String lastSendData;
+unsigned long lastSendTime;  //in ms
+unsigned long maxAirTime = 1000;  //in ms
 //SoftEasyTransfer AET;
 
 int id_armsg[20];
@@ -98,9 +106,15 @@ void loop() {
 	if (millis() - prevmillis2 >= intervall2)
 	{
 		waitForTelegram();
+
 		prevmillis2 = millis();
 	}
 
+	if (millis() < intervall1)
+	{
+		prevmillis1 = 0;
+		prevmillis2 = 0;
+	}
 
 
 }
@@ -134,9 +148,15 @@ void serialSendMSG(int id, String data)
 	ASerial.print(id);
 	ASerial.print("d");
 	ASerial.print(data);
-	ASerial.print("e");
+	ASerial.print("|e");
+
+	delay(10);
+
+
+	lastSendTime = millis();
 
 	Serial << "gesendet: " << id << ": " << data << endl;
+	
 }
 
 void NTPAbrufen()
@@ -154,14 +174,18 @@ void waitForSerial()
 		if (inbyte == 'i')
 		{
 			Areceived_id = ASerial.parseInt();
+			Serial.println(Areceived_id);
 		}
 		else if (inbyte == 'd')
 		{
-			Areceived_data = ASerial.readString();
+			Areceived_data = ASerial.readStringUntil('|');
+			Serial.println(Areceived_data);
 		}
 		else if (inbyte == 'e')
 		{
+			delay(15);
 			analyseSerial();
+
 		}
 	}
 
@@ -170,9 +194,18 @@ void waitForSerial()
 
 void analyseSerial()
 {
-	if (Areceived_id == 1)
+	if (millis() < maxAirTime)  //Überlauffehlerschutzmaßnahme
+		lastSendTime = 0;
+
+	if (Areceived_id == lastSendId) //Msg ist Antwort auf letzte Anfrage
 	{
-		// mach irgendwas mit data
+		lastSendId = -1;  //offene Anfrage schließen
+		lastSendData = "-1";
+	}
+
+	if (Areceived_id == ArduinoAlive)
+	{
+		telegramPrintAlive(msgsenderid, "Arduino", (unsigned long)atol(Areceived_data.c_str()));
 	}
 }
 
@@ -189,7 +222,7 @@ void waitForTelegram()
 		msgtext = msg.text;
 		msgsenderid = msg.sender.id;
 
-		if (msg.messageType == CTBotMessageText)
+		if (msg.messageType == CTBotMessageText)  //Auf eingehende TELEGRAM-Nachrichten regieren
 		{
 			if (msgtext == "?") //Hilfenachricht senden
 			{
@@ -197,7 +230,9 @@ void waitForTelegram()
 			}
 			if (msgtext == "alive")
 			{
-				telegramPrintAlive(msgsenderid);
+				telegramPrintAlive(msgsenderid, "ESP", millis());
+				serialSendMSG(1, "Moin");
+
 			}
 			if (msgtext == "Hallo")
 			{
@@ -211,8 +246,12 @@ void waitForTelegram()
 				kb1.addButton("Button6", "kb1_b6", CTBotKeyboardButtonQuery);
 				bot.sendMessage(msgsenderid, "Was kann ich für Dich tun?\nhm?", kb1);
 			}
+			if (msgtext == "1")
+			{
+				serialSendMSG(1, msg.sender.firstName);
+			}
 		}
-		if (msg.messageType == CTBotMessageQuery)
+		if (msg.messageType == CTBotMessageQuery)  // Auf KEYBOARD-Query regieren
 		{
 			if (msg.callbackQueryData == "kb1_b1")
 			{
@@ -224,7 +263,7 @@ void waitForTelegram()
 
 	}
 	else
-		Serial << "waiting " << millis() << endl; //debugging
+		Serial << "waiting " << millis() << " | ASerial " << ((ASerial.available() > 0) ? "available" : "not available") << endl; //debugging
 }
 
 void telegramPrintHelp(uint64_t senderid)
@@ -233,15 +272,16 @@ void telegramPrintHelp(uint64_t senderid)
 	gebastel += "Hier koennte eine gut beschriebene und benutzfreundliche Anleitung zur Verwendung des Bots ihren Platz finden. Jedoch hat der Programmierer noch nicht die Zeit gefunden, um lange und ueberschwingliche Texte zu implementieren. \n";
 	bot.sendMessage(senderid, gebastel);
 }
-void telegramPrintAlive(uint64_t senderid)
+void telegramPrintAlive(uint64_t senderid, String client, unsigned long mil)
 {
-	unsigned long mil = millis();
-	int sekunden = mil / (1000);
-	int minuten = sekunden / 60;
+	
+	unsigned long sekunden = mil / (1000);
+	unsigned long minuten = sekunden / 60;
 	int stunden = minuten / 60;
 	int tage = (stunden / 24) + millizyklen * 48;
 
-	gebastel = "ESP laeuft seit ";
+	gebastel = client;
+	gebastel += " laeuft seit ";
 	if (sekunden < 120)
 	{
 		gebastel += sekunden;
@@ -263,8 +303,10 @@ void telegramPrintAlive(uint64_t senderid)
 		gebastel += " Tagen.  \n";
 	}
 
-	Serial.println("Alive1/3");//
+	Serial.println(gebastel);//debug
+	bot.sendMessage(senderid, gebastel);
 
+	/*
 	delay(5);
 	serialSendMSG(1, "42");
 	delay(5);
@@ -312,4 +354,5 @@ void telegramPrintAlive(uint64_t senderid)
 		Serial.println(gebastel);//debug
 		bot.sendMessage(senderid, gebastel);
 	}
+	*/
 }
