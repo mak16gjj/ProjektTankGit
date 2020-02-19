@@ -45,10 +45,14 @@ unsigned long telegram_prevmillis = 0;
 SoftwareSerial ASerial(SSRX, SSTX);  //kommt von/geht an Arduino Nano
 int Areceived_id = -1;
 String Areceived_data = "-1";
-int lastSendId;
-String lastSendData;
-unsigned long lastSendTime;  //in ms
+int lastSendId = -1;  //Um nochmal zu senden, falls keine Antwort kam
+String lastSendData = "-1";
+unsigned long lastSendTime = 0;  //in ms
 unsigned long maxAirTime = 1000;  //in ms
+int lastRecId = -1;  //Falls Antwort doppelt gesendet wurde
+String lastRecData = "-1";
+unsigned long lastRecTime = 0;
+
 //SoftEasyTransfer AET;
 
 int id_armsg[20];
@@ -184,6 +188,7 @@ void waitForSerial()
 		else if (inbyte == 'e')
 		{
 			delay(15);
+			
 			analyseSerial();
 
 		}
@@ -195,18 +200,38 @@ void waitForSerial()
 void analyseSerial()
 {
 	if (millis() < maxAirTime)  //Überlauffehlerschutzmaßnahme
+	{
 		lastSendTime = 0;
+		lastRecTime = 0;
+	}
 
-	if (Areceived_id == lastSendId) //Msg ist Antwort auf letzte Anfrage
+	if (Areceived_id == lastSendId) //Msg ist Antwort auf letzte Anfrage -> offene Anfrage schließen
 	{
 		lastSendId = -1;  //offene Anfrage schließen
 		lastSendData = "-1";
+	}
+
+	if (Areceived_id == lastRecId && Areceived_data == lastRecData && millis() - lastRecTime < 10000)  //Nachricht ignorieren, falls sie der gerade eben Empfangenen gleicht
+	{
+		Areceived_id = -1;
+		Areceived_data = "-1";
+	}
+	else
+	{
+		lastRecId = Areceived_id;
+		lastRecData = Areceived_data;
+		lastRecTime = millis();
 	}
 
 	if (Areceived_id == ArduinoAlive)
 	{
 		telegramPrintAlive(msgsenderid, "Arduino", (unsigned long)atol(Areceived_data.c_str()));
 	}
+
+
+
+
+
 }
 
 

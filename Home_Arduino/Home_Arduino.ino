@@ -90,6 +90,7 @@ void analyseWLAN()
 	if (Wreceived_id == 1)
 	{
 		serialSendMSG(1, String(millis()));
+		//serialSendMSG(1, String(millis()));
 		//Wreceived_id = -1;
 	}
 }
