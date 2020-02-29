@@ -173,6 +173,7 @@ void waitForSerial()
 {
 	if (ASerial.available() > 0)
 	{
+		delay(10);
 		char inbyte;
 		inbyte = ASerial.read();
 		if (inbyte == 'i')
@@ -186,11 +187,8 @@ void waitForSerial()
 			Serial.println(Areceived_data);
 		}
 		else if (inbyte == 'e')
-		{
-			delay(15);
-			
+		{	
 			analyseSerial();
-
 		}
 	}
 

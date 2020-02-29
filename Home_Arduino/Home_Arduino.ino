@@ -54,6 +54,9 @@ void waitForFunk()
 void analyseFunk()
 {}
 
+void FunksendMSG()
+{}
+
 void WetterAuswerten()
 {}
 
@@ -63,6 +66,7 @@ void waitForWLAN()  //warte auf Serielle Kommunikation vom WLAN-Controler
 {
 	if (WSerial.available() > 0)
 	{
+		delay(10);
 		char inbyte;
 		inbyte = WSerial.read();
 		if (inbyte == 'i')
@@ -77,8 +81,7 @@ void waitForWLAN()  //warte auf Serielle Kommunikation vom WLAN-Controler
 			Serial.println(Wreceived_data);
 		}
 		else if (inbyte == 'e')
-		{
-			delay(15);
+		{	
 			analyseWLAN();
 			
 		}
